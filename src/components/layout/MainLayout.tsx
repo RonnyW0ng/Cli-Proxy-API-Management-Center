@@ -395,6 +395,13 @@ export function MainLayout() {
           metaKey: 'nav_meta.dashboard',
           icon: sidebarIcons.dashboard,
         },
+        {
+          path: '/cpa/',
+          labelKey: 'nav.cpa',
+          metaKey: 'nav_meta.cpa',
+          icon: sidebarIcons.dashboard,
+          external: true,
+        },
       ],
     },
     {
@@ -726,6 +733,32 @@ export function MainLayout() {
                   : idx > 0 && <div className="nav-group-divider" aria-hidden="true" />}
                 {group.items.map((item) => {
                   const itemLabel = t(item.labelKey);
+                  const content = (
+                    <>
+                      <span className="nav-icon">{item.icon}</span>
+                      {showSidebarLabels && (
+                        <span className="nav-text">
+                          <span className="nav-label">{itemLabel}</span>
+                          <span className="nav-meta">{t(item.metaKey)}</span>
+                        </span>
+                      )}
+                    </>
+                  );
+
+                  if (item.external) {
+                    return (
+                      <a
+                        key={item.path}
+                        href={item.path}
+                        className="nav-item"
+                        onClick={() => setSidebarOpen(false)}
+                        title={showSidebarLabels ? undefined : itemLabel}
+                      >
+                        {content}
+                      </a>
+                    );
+                  }
+
                   return (
                     <NavLink
                       key={item.path}
@@ -734,13 +767,7 @@ export function MainLayout() {
                       onClick={() => setSidebarOpen(false)}
                       title={showSidebarLabels ? undefined : itemLabel}
                     >
-                      <span className="nav-icon">{item.icon}</span>
-                      {showSidebarLabels && (
-                        <span className="nav-text">
-                          <span className="nav-label">{itemLabel}</span>
-                          <span className="nav-meta">{t(item.metaKey)}</span>
-                        </span>
-                      )}
+                      {content}
                     </NavLink>
                   );
                 })}

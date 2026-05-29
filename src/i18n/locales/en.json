@@ -118,7 +118,8 @@
     "quota_management": "Quota Management",
     "config_management": "Config Panel",
     "logs": "Logs Viewer",
-    "system_info": "Management Center Info"
+    "system_info": "Management Center Info",
+    "cpa": "Proxy Service"
   },
   "nav_groups": {
     "operate": "Operate",
@@ -128,6 +129,7 @@
   },
   "nav_meta": {
     "dashboard": "Operations overview",
+    "cpa": "Proxy service entry",
     "ai_providers": "Upstream model routing",
     "auth_files": "Auth files & credentials",
     "oauth": "OAuth authorization",
