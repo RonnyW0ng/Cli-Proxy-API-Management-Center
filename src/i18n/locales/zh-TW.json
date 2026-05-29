@@ -118,7 +118,8 @@
     "quota_management": "配額管理",
     "config_management": "設定面板",
     "logs": "記錄檢視",
-    "system_info": "中心資訊"
+    "system_info": "中心資訊",
+    "cpa": "代理服務"
   },
   "nav_groups": {
     "operate": "運行",
@@ -128,6 +129,7 @@
   },
   "nav_meta": {
     "dashboard": "運行總覽",
+    "cpa": "代理服務入口",
     "ai_providers": "上游模型路由",
     "auth_files": "Auth 檔案與憑證",
     "oauth": "OAuth 授權登入",
