@@ -1,4 +1,4 @@
-import { useEffect, useId, useMemo, useState } from 'react';
+import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   IconAlertTriangle,
@@ -54,6 +54,7 @@ const emptyApiKeyEntry = (): ApiKeyEntryInput => ({
   apiKey: '',
   proxyUrl: '',
   headersText: '',
+  apiKeyTouched: false,
 });
 
 const headersObjectToText = (headers?: Record<string, string>): string =>
@@ -124,6 +125,7 @@ function buildInitialForm(
             proxyUrl: entry.proxyUrl ?? '',
             headersText: headersObjectToText(entry.headers),
             authIndex: entry.authIndex,
+            apiKeyTouched: false,
           }))
         : [emptyApiKeyEntry()],
     };
@@ -211,6 +213,8 @@ export function BaseProviderForm({
     JSON.stringify(buildInitialForm(brand, resource, mode))
   );
   const [error, setError] = useState<string | null>(null);
+  const apiKeyFocusedRef = useRef(false);
+  const apiKeyEntryFocusedRef = useRef<Record<number, boolean>>({});
 
   const isDirty = useMemo(
     () => JSON.stringify(form) !== initialFormSignature,
@@ -406,7 +410,18 @@ export function BaseProviderForm({
     }
     try {
       setError(null);
-      await onSubmit(form);
+      const submitForm =
+        mode === 'edit'
+          ? {
+              ...form,
+              apiKey: form.apiKeyTouched ? form.apiKey : '',
+              apiKeyEntries: form.apiKeyEntries?.map((entry) => ({
+                ...entry,
+                apiKey: entry.apiKeyTouched ? entry.apiKey : '',
+              })),
+            }
+          : form;
+      await onSubmit(submitForm);
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
     }
@@ -459,7 +474,18 @@ export function BaseProviderForm({
               className={styles.input}
               type="password"
               value={form.apiKey}
-              onChange={(e) => updateField('apiKey', e.target.value)}
+              name="provider-api-key"
+              autoComplete="new-password"
+              data-lpignore="true"
+              data-1p-ignore="true"
+              onFocus={() => {
+                apiKeyFocusedRef.current = true;
+              }}
+              onChange={(e) => {
+                if (mode === 'edit' && !apiKeyFocusedRef.current) return;
+                updateField('apiKey', e.target.value);
+                updateField('apiKeyTouched', true);
+              }}
               placeholder={
                 mode === 'edit'
                   ? t('providersPage.form.apiKeyEditPlaceholder')
@@ -699,14 +725,24 @@ export function BaseProviderForm({
                       className={styles.input}
                       type="password"
                       value={entry.apiKey}
-                      onChange={(e) =>
+                      name="provider-entry-api-key"
+                      autoComplete="new-password"
+                      data-lpignore="true"
+                      data-1p-ignore="true"
+                      onFocus={() => {
+                        apiKeyEntryFocusedRef.current[idx] = true;
+                      }}
+                      onChange={(e) => {
+                        if (mode === 'edit' && !apiKeyEntryFocusedRef.current[idx]) return;
                         updateField(
                           'apiKeyEntries',
                           apiKeyEntries.map((it, i) =>
-                            i === idx ? { ...it, apiKey: e.target.value } : it
+                            i === idx
+                              ? { ...it, apiKey: e.target.value, apiKeyTouched: true }
+                              : it
                           )
-                        )
-                      }
+                        );
+                      }}
                       disabled={mutating}
                       placeholder={t('providersPage.form.apiKeyCreatePlaceholder')}
                     />
