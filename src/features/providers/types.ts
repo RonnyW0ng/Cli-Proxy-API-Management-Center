@@ -93,6 +93,7 @@ export interface ApiKeyEntryInput {
   proxyUrl: string;
   headersText: string;
   authIndex?: string;
+  apiKeyTouched?: boolean;
 }
 
 export interface CloakInput {
@@ -124,4 +125,5 @@ export interface ProviderEntryFormInput {
   /** OpenAI 专属 */
   testModel?: string;
   apiKeyEntries?: ApiKeyEntryInput[];
+  apiKeyTouched?: boolean;
 }

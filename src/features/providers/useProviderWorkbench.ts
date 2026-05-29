@@ -174,14 +174,18 @@ const buildOpenAIConfig = (
     .filter((m) => m.name);
   const apiKeyEntries =
     input.apiKeyEntries
-      ?.map((entry) => ({
-        apiKey: entry.apiKey.trim(),
-        proxyUrl: entry.proxyUrl.trim() || undefined,
-        headers: Object.keys(parseHeadersText(entry.headersText)).length
-          ? parseHeadersText(entry.headersText)
-          : undefined,
-        authIndex: entry.authIndex?.trim() || undefined,
-      }))
+      ?.map((entry, index) => {
+        const existingEntry = existing?.apiKeyEntries?.[index];
+        const parsedHeaders = parseHeadersText(entry.headersText);
+        return {
+          apiKey: entry.apiKeyTouched
+            ? entry.apiKey.trim()
+            : (existingEntry?.apiKey ?? entry.apiKey.trim()),
+          proxyUrl: entry.proxyUrl.trim() || undefined,
+          headers: Object.keys(parsedHeaders).length ? parsedHeaders : undefined,
+          authIndex: entry.authIndex?.trim() || existingEntry?.authIndex || undefined,
+        };
+      })
       .filter((entry) => entry.apiKey) ?? [];
 
   return {
